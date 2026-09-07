@@ -1,0 +1,15 @@
+{
+  "name": "Plano de Treino",
+  "short_name": "Treino",
+  "description": "Checklist de treino de força com registro de séries e carga",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#14171A",
+  "theme_color": "#14171A",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

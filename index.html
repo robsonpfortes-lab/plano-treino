@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plano de Treino</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14171A;
+    --steel:#20252C;
+    --steel-2:#2A303A;
+    --line:#3A4048;
+    --chalk:#EDEDE6;
+    --chalk-dim:#9BA3AC;
+    --yellow:#E8B93F;
+    --yellow-dim:#8A6E28;
+    --ok:#5FA779;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--chalk);
+    font-family:'Barlow', sans-serif;
+    -webkit-tap-highlight-color:transparent;
+    min-height:100vh;
+  }
+  .app{max-width:480px;margin:0 auto;padding:0 0 40px;}
+
+  header.top{
+    padding:22px 18px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  header.top .kicker{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.08em;
+    color:var(--yellow);
+    text-transform:uppercase;
+  }
+  header.top h1{
+    font-family:'Barlow Condensed', sans-serif;
+    font-weight:800;
+    font-size:34px;
+    line-height:1;
+    margin:4px 0 0;
+    letter-spacing:.01em;
+  }
+
+  nav.days{
+    display:flex;
+    gap:8px;
+    padding:14px 18px;
+    overflow-x:auto;
+    border-bottom:1px solid var(--line);
+  }
+  nav.days button{
+    flex:0 0 auto;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--chalk-dim);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:.03em;
+    padding:9px 14px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  nav.days button.active{
+    background:var(--yellow);
+    border-color:var(--yellow);
+    color:var(--ink);
+  }
+
+  .day-head{
+    padding:18px 18px 10px;
+  }
+  .day-head .title{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800;
+    font-size:26px;
+    margin:0;
+  }
+  .day-head .sub{
+    color:var(--chalk-dim);
+    font-size:15px;
+    margin-top:2px;
+  }
+
+  .progress-wrap{
+    padding:0 18px 18px;
+  }
+  .progress-bar{
+    height:6px;
+    background:var(--steel-2);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:var(--yellow);
+    width:0%;
+    transition:width .25s ease;
+  }
+  .progress-label{
+    font-size:13px;
+    color:var(--chalk-dim);
+    margin-top:6px;
+  }
+
+  section.group{
+    padding:0 18px 20px;
+  }
+  section.group h2{
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:19px;
+    margin:0 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .ex-card{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    background:var(--steel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:12px 14px;
+    margin-bottom:8px;
+  }
+  .ex-card.done{
+    border-color:var(--ok);
+    background:#1B2620;
+  }
+  .ex-check{
+    flex:0 0 auto;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    border:2px solid var(--line);
+    background:transparent;
+    margin-top:2px;
+    cursor:pointer;
+    position:relative;
+  }
+  .ex-check.done{
+    background:var(--ok);
+    border-color:var(--ok);
+  }
+  .ex-check.done::after{
+    content:'';
+    position:absolute;
+    left:7px; top:3px;
+    width:6px; height:11px;
+    border:solid var(--ink);
+    border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  .ex-body{flex:1; min-width:0;}
+  .ex-name-row{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .ex-name{
+    font-weight:600;
+    font-size:16px;
+  }
+  .ex-card.done .ex-name{
+    color:var(--chalk-dim);
+    text-decoration:line-through;
+  }
+  .tag-principal{
+    font-family:'Barlow Condensed',sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:.04em;
+    color:var(--yellow);
+    border:1px solid var(--yellow-dim);
+    border-radius:2px;
+    padding:1px 6px;
+    text-transform:uppercase;
+  }
+  .ex-scheme{
+    font-size:14px;
+    color:var(--chalk-dim);
+    margin-top:2px;
+  }
+  .ex-note{
+    font-size:13px;
+    color:var(--chalk-dim);
+    margin-top:4px;
+    font-style:italic;
+  }
+
+  .sets-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+    flex-wrap:wrap;
+  }
+  .sets-row .sets-label{
+    font-size:12px;
+    color:var(--chalk-dim);
+    margin-right:2px;
+  }
+  .set-btn{
+    width:34px;
+    height:34px;
+    border-radius:6px;
+    border:1.5px solid var(--line);
+    background:transparent;
+    color:var(--chalk-dim);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    padding:0;
+  }
+  .set-btn.done{
+    background:var(--ok);
+    border-color:var(--ok);
+    color:var(--ink);
+  }
+
+  .weight-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:10px;
+  }
+  .weight-row label{
+    font-size:12px;
+    color:var(--chalk-dim);
+  }
+  .weight-row .weight-input-wrap{
+    display:flex;
+    align-items:center;
+    background:var(--steel-2);
+    border:1.5px solid var(--line);
+    border-radius:6px;
+    padding:0 8px;
+  }
+  .weight-row input{
+    width:56px;
+    background:transparent;
+    border:none;
+    outline:none;
+    color:var(--chalk);
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    padding:8px 2px;
+    text-align:right;
+    -moz-appearance:textfield;
+  }
+  .weight-row input::-webkit-outer-spin-button,
+  .weight-row input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+  .weight-row .unit{
+    font-size:13px;
+    color:var(--chalk-dim);
+    padding-left:2px;
+  }
+
+  .reset-row{
+    padding:6px 18px 10px;
+  }
+  .reset-btn{
+    width:100%;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--chalk-dim);
+    font-family:'Barlow',sans-serif;
+    font-size:14px;
+    padding:12px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  .reset-btn:active{background:var(--steel-2);}
+
+  .footer-note{
+    padding:6px 18px 0;
+    font-size:12.5px;
+    color:var(--chalk-dim);
+    line-height:1.5;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="kicker">Musculação · 5x por semana</div>
+    <h1>Plano de treino</h1>
+  </header>
+
+  <nav class="days" id="dayNav"></nav>
+
+  <div class="day-head">
+    <p class="title" id="dayTitle"></p>
+    <p class="sub" id="daySub"></p>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel"></div>
+  </div>
+
+  <div id="groups"></div>
+
+  <div class="reset-row">
+    <button class="reset-btn" id="resetBtn">Reiniciar marcação de hoje</button>
+  </div>
+
+  <p class="footer-note">Cardio de 10–15 min encerra todos os dias. Priorize o exercício principal com energia fresca — se o tempo apertar, corte séries dos isolados antes.</p>
+</div>
+
+<script>
+const PLAN = {
+  seg: {
+    label: "SEG",
+    title: "Segunda-feira",
+    sub: "Ombro · Tríceps · Panturrilha",
+    groups: [
+      { name: "Ombro (anterior · lateral)", exs: [
+        { id:"seg-1", name:"Desenvolvimento com halteres ou máquina", scheme:"3 séries x 8-10 reps", sets:3, principal:true },
+        { id:"seg-2", name:"Elevação lateral", scheme:"3 séries x 12-15 reps", sets:3 },
+        { id:"seg-3", name:"Elevação frontal", scheme:"2-3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Tríceps", exs: [
+        { id:"seg-4", name:"Tríceps corda (polia)", scheme:"3 séries x 12 reps", sets:3 },
+        { id:"seg-5", name:"Tríceps francês (halter ou barra)", scheme:"3 séries x 10-12 reps", sets:3 },
+        { id:"seg-6", name:"Tríceps testa ou mergulho no banco", scheme:"2-3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Panturrilha", exs: [
+        { id:"seg-7", name:"Leg press 45° (ponta dos pés)", scheme:"4 séries x 15-20 reps", sets:4 },
+      ]},
+      { name: "Core", exs: [
+        { id:"seg-8", name:"Prancha", scheme:"3 séries x 30-45s", sets:3 },
+        { id:"seg-9", name:"Prancha lateral", scheme:"3 séries x 20-30s (cada lado)", sets:3 },
+      ]},
+      { name: "Cardio", exs: [
+        { id:"seg-10", name:"Esteira, bike ou elíptico", scheme:"10-15 min · intensidade moderada", sets:0 },
+      ]},
+    ]
+  },
+  ter: {
+    label: "TER",
+    title: "Terça-feira",
+    sub: "Peito · Bíceps · Agachamento",
+    groups: [
+      { name: "Quadríceps", exs: [
+        { id:"ter-6", name:"Agachamento livre", scheme:"3 séries x 8-10 reps", sets:3, principal:true, note:"Feito logo no início, com energia máxima — é o exercício mais pesado e que mais exige do corpo todo" },
+        { id:"ter-7", name:"Cadeira extensora", scheme:"3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Peito", exs: [
+        { id:"ter-1", name:"Supino reto (barra ou halteres)", scheme:"3 séries x 8-10 reps", sets:3 },
+        { id:"ter-2", name:"Supino inclinado (halteres)", scheme:"3 séries x 10-12 reps", sets:3 },
+        { id:"ter-3", name:"Crucifixo ou peck deck", scheme:"2-3 séries x 12-15 reps", sets:3 },
+      ]},
+      { name: "Bíceps", exs: [
+        { id:"ter-4", name:"Rosca direta (barra ou halteres)", scheme:"3 séries x 10-12 reps", sets:3 },
+        { id:"ter-5", name:"Rosca alternada ou martelo", scheme:"2-3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Core", exs: [
+        { id:"ter-8", name:"Abdominal tradicional", scheme:"3 séries x 15-20 reps", sets:3 },
+      ]},
+      { name: "Cardio", exs: [
+        { id:"ter-9", name:"Esteira, bike ou elíptico", scheme:"10-15 min · intensidade moderada", sets:0 },
+      ]},
+    ]
+  },
+  qua: {
+    label: "QUA",
+    title: "Quarta-feira",
+    sub: "Costas · Trapézio · Afundo",
+    groups: [
+      { name: "Adutor", exs: [
+        { id:"qua-5", name:"Afundo com barra ou halteres", scheme:"3 séries x 10 reps (cada perna)", sets:3, principal:true, note:"Feito logo no início, com energia máxima — exercício unilateral, exige mais equilíbrio e controle" },
+        { id:"qua-6", name:"Cadeira adutora", scheme:"3 séries x 12-15 reps", sets:3 },
+      ]},
+      { name: "Costas", exs: [
+        { id:"qua-1", name:"Puxada frente (pulley) ou barra fixa", scheme:"3 séries x 8-10 reps", sets:3 },
+        { id:"qua-2", name:"Remada baixa (cabo) ou remada curvada", scheme:"3 séries x 10-12 reps", sets:3 },
+        { id:"qua-3", name:"Puxada fechada ou remada unilateral", scheme:"2-3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Trapézio", exs: [
+        { id:"qua-4", name:"Encolhimento com halteres ou barra", scheme:"3 séries x 12-15 reps", sets:3 },
+      ]},
+      { name: "Core", exs: [
+        { id:"qua-7", name:"Prancha", scheme:"3 séries x 30-45s", sets:3 },
+        { id:"qua-8", name:"Prancha lateral", scheme:"3 séries x 20-30s (cada lado)", sets:3 },
+      ]},
+      { name: "Cardio", exs: [
+        { id:"qua-9", name:"Esteira, bike ou elíptico", scheme:"10-15 min · intensidade moderada", sets:0 },
+      ]},
+    ]
+  },
+  qui: {
+    label: "QUI",
+    title: "Quinta-feira",
+    sub: "Peito · Tríceps · Abdutor",
+    groups: [
+      { name: "Peito", exs: [
+        { id:"qui-1", name:"Supino inclinado (halteres ou máquina)", scheme:"3 séries x 8-10 reps", sets:3, note:"Ângulo diferente da terça — foco na parte superior" },
+        { id:"qui-2", name:"Crossover ou crucifixo na máquina", scheme:"3 séries x 12 reps", sets:3 },
+        { id:"qui-3", name:"Supino máquina (peck deck ou hammer)", scheme:"2-3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Tríceps", exs: [
+        { id:"qui-4", name:"Tríceps pulley (barra reta ou W)", scheme:"3 séries x 12 reps", sets:3 },
+        { id:"qui-5", name:"Tríceps coice (halter) ou tríceps banco", scheme:"2-3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Abdutor", exs: [
+        { id:"qui-6", name:"Cadeira abdutora", scheme:"3 séries x 15-20 reps", sets:3 },
+      ]},
+      { name: "Core", exs: [
+        { id:"qui-7", name:"Abdominal tradicional", scheme:"3 séries x 15-20 reps", sets:3 },
+      ]},
+      { name: "Cardio", exs: [
+        { id:"qui-8", name:"Esteira, bike ou elíptico", scheme:"10-15 min · pode puxar intervalado, já que não há multiarticular de perna hoje", sets:0 },
+      ]},
+    ]
+  },
+  sex: {
+    label: "SEX",
+    title: "Sexta-feira",
+    sub: "Ombro (posterior) · Terra romeno",
+    groups: [
+      { name: "Posterior de coxa", exs: [
+        { id:"sex-4", name:"Levantamento terra romeno", scheme:"3 séries x 8-10 reps", sets:3, principal:true, note:"Feito logo no início, com energia máxima — é o exercício mais pesado e que mais exige potência" },
+        { id:"sex-5", name:"Mesa ou cadeira flexora", scheme:"3 séries x 12 reps", sets:3 },
+      ]},
+      { name: "Ombro (posterior)", exs: [
+        { id:"sex-1", name:"Crucifixo invertido (halteres ou peck deck invertido)", scheme:"3 séries x 12-15 reps", sets:3 },
+        { id:"sex-2", name:"Face pull (cabo/polia)", scheme:"3 séries x 12-15 reps", sets:3 },
+        { id:"sex-3", name:"Remada alta", scheme:"2-3 séries x 10-12 reps", sets:3 },
+      ]},
+      { name: "Core", exs: [
+        { id:"sex-6", name:"Prancha", scheme:"3 séries x 30-45s", sets:3 },
+        { id:"sex-7", name:"Prancha lateral", scheme:"3 séries x 20-30s (cada lado)", sets:3 },
+      ]},
+      { name: "Cardio", exs: [
+        { id:"sex-8", name:"Esteira, bike ou elíptico", scheme:"10-15 min · intensidade moderada", sets:0 },
+      ]},
+    ]
+  },
+};
+
+const DAY_ORDER = ["seg","ter","qua","qui","sex"];
+let currentDay = DAY_ORDER[0];
+
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+// Tudo fica numa única chave: séries marcadas de hoje (resetam a cada dia) + cargas (permanentes).
+const APP_KEY = 'treino-dados';
+let appData = { date: todayStr(), checked: {}, weights: {} };
+
+function loadAppData(){
+  try{
+    const raw = localStorage.getItem(APP_KEY);
+    if(raw){
+      const parsed = JSON.parse(raw);
+      appData.weights = parsed.weights || {};
+      appData.checked = (parsed.date === todayStr()) ? (parsed.checked || {}) : {};
+    }
+  }catch(e){
+    console.warn('Não foi possível carregar os dados salvos neste navegador.', e);
+  }
+}
+
+function persistNow(){
+  appData.date = todayStr();
+  try{
+    localStorage.setItem(APP_KEY, JSON.stringify(appData));
+  }catch(e){
+    console.warn('Não foi possível salvar neste navegador.', e);
+  }
+}
+
+let saveTimer = null;
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(persistNow, 400);
+}
+function flushSave(){
+  clearTimeout(saveTimer);
+  persistNow();
+}
+
+function renderNav(){
+  const nav = document.getElementById('dayNav');
+  nav.innerHTML = '';
+  DAY_ORDER.forEach(key=>{
+    const btn = document.createElement('button');
+    btn.textContent = PLAN[key].label;
+    if(key === currentDay) btn.classList.add('active');
+    btn.onclick = ()=>{ currentDay = key; render(); };
+    nav.appendChild(btn);
+  });
+}
+
+// Retorna a lista de "unidades" marcáveis de um exercício:
+// uma por série (ex.sets > 0), ou uma única unidade para itens sem série (cardio).
+function unitsFor(ex){
+  if(ex.sets && ex.sets > 0){
+    const units = [];
+    for(let i=1; i<=ex.sets; i++) units.push(`${ex.id}-s${i}`);
+    return units;
+  }
+  return [ex.id];
+}
+
+function allExercises(day){
+  return PLAN[day].groups.flatMap(g=>g.exs);
+}
+
+function renderDay(){
+  const day = PLAN[currentDay];
+  document.getElementById('dayTitle').textContent = day.title;
+  document.getElementById('daySub').textContent = day.sub;
+
+  const allUnits = allExercises(currentDay).flatMap(unitsFor);
+  const total = allUnits.length;
+  const done = allUnits.filter(u=>appData.checked[u]).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} de ${total} séries concluídas`;
+
+  const groupsEl = document.getElementById('groups');
+  groupsEl.innerHTML = '';
+  day.groups.forEach(group=>{
+    const section = document.createElement('section');
+    section.className = 'group';
+    const h2 = document.createElement('h2');
+    h2.textContent = group.name;
+    section.appendChild(h2);
+
+    group.exs.forEach(ex=>{
+      const units = unitsFor(ex);
+      const isDone = units.every(u=>appData.checked[u]);
+      const card = document.createElement('div');
+      card.className = 'ex-card' + (isDone ? ' done' : '');
+
+      const body = document.createElement('div');
+      body.className = 'ex-body';
+
+      const nameRow = document.createElement('div');
+      nameRow.className = 'ex-name-row';
+      const name = document.createElement('span');
+      name.className = 'ex-name';
+      name.textContent = ex.name;
+      nameRow.appendChild(name);
+      if(ex.principal){
+        const tag = document.createElement('span');
+        tag.className = 'tag-principal';
+        tag.textContent = 'Principal';
+        nameRow.appendChild(tag);
+      }
+
+      const scheme = document.createElement('div');
+      scheme.className = 'ex-scheme';
+      scheme.textContent = ex.scheme;
+
+      body.appendChild(nameRow);
+      body.appendChild(scheme);
+
+      if(ex.note){
+        const note = document.createElement('div');
+        note.className = 'ex-note';
+        note.textContent = ex.note;
+        body.appendChild(note);
+      }
+
+      if(ex.sets && ex.sets > 0){
+        const setsRow = document.createElement('div');
+        setsRow.className = 'sets-row';
+        const label = document.createElement('span');
+        label.className = 'sets-label';
+        label.textContent = 'Séries:';
+        setsRow.appendChild(label);
+        units.forEach((unit, idx)=>{
+          const b = document.createElement('button');
+          b.className = 'set-btn' + (appData.checked[unit] ? ' done' : '');
+          b.textContent = String(idx+1);
+          b.onclick = ()=>{
+            appData.checked[unit] = !appData.checked[unit];
+            scheduleSave();
+            renderDay();
+          };
+          setsRow.appendChild(b);
+        });
+        body.appendChild(setsRow);
+
+        const weightRow = document.createElement('div');
+        weightRow.className = 'weight-row';
+        const wLabel = document.createElement('label');
+        wLabel.textContent = 'Carga:';
+        wLabel.setAttribute('for', 'w-'+ex.id);
+        const inputWrap = document.createElement('div');
+        inputWrap.className = 'weight-input-wrap';
+        const wInput = document.createElement('input');
+        wInput.type = 'number';
+        wInput.step = '0.5';
+        wInput.min = '0';
+        wInput.id = 'w-'+ex.id;
+        wInput.placeholder = '0';
+        wInput.value = appData.weights[ex.id] !== undefined ? appData.weights[ex.id] : '';
+        wInput.oninput = ()=>{
+          appData.weights[ex.id] = wInput.value;
+          scheduleSave();
+        };
+        wInput.onblur = ()=>{
+          flushSave();
+        };
+        const unitSpan = document.createElement('span');
+        unitSpan.className = 'unit';
+        unitSpan.textContent = 'kg';
+        inputWrap.appendChild(wInput);
+        inputWrap.appendChild(unitSpan);
+        weightRow.appendChild(wLabel);
+        weightRow.appendChild(inputWrap);
+        body.appendChild(weightRow);
+
+        card.appendChild(body);
+      } else {
+        const check = document.createElement('div');
+        check.className = 'ex-check' + (isDone ? ' done' : '');
+        check.onclick = ()=>{
+          appData.checked[ex.id] = !appData.checked[ex.id];
+          scheduleSave();
+          renderDay();
+        };
+        card.appendChild(check);
+        card.appendChild(body);
+      }
+
+      section.appendChild(card);
+    });
+
+    groupsEl.appendChild(section);
+  });
+}
+
+function render(){
+  renderNav();
+  renderDay();
+}
+
+document.getElementById('resetBtn').onclick = ()=>{
+  appData.checked = {};
+  flushSave();
+  renderDay();
+};
+
+(async function init(){
+  const weekday = new Date().getDay();
+  const map = {1:"seg",2:"ter",3:"qua",4:"qui",5:"sex"};
+  if(map[weekday]) currentDay = map[weekday];
+
+  loadAppData();
+  render();
+
+  window.addEventListener('pagehide', flushSave);
+  window.addEventListener('beforeunload', flushSave);
+})();
+</script>
+</body>
+</html>

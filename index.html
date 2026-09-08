@@ -272,19 +272,22 @@
   }
 
   .sets-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
     margin-top:10px;
-    flex-wrap:wrap;
   }
   .sets-row .sets-label{
+    display:block;
     font-size:18px;
     color:var(--chalk-dim);
-    margin-right:2px;
+    margin-bottom:6px;
+  }
+  .sets-buttons{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:1fr;
+    gap:6px;
   }
   .set-btn{
-    width:88px;
+    width:100%;
     height:44px;
     border-radius:8px;
     border:1.5px solid var(--line);
@@ -400,16 +403,10 @@
 <div class="app">
   <div class="fixed-header">
     <header class="top">
-      <div class="kicker">Musculação · 5x por semana</div>
       <h1>Plano de treino</h1>
     </header>
 
     <nav class="days" id="dayNav"></nav>
-
-    <div class="day-head">
-      <p class="title" id="dayTitle"></p>
-      <p class="sub" id="daySub"></p>
-    </div>
 
     <div class="progress-wrap">
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
@@ -666,10 +663,6 @@ function unitsFor(ex){
 }
 
 function renderDay(){
-  const day = PLAN[currentDay];
-  document.getElementById('dayTitle').textContent = day.title;
-  document.getElementById('daySub').textContent = day.sub;
-
   const order = getOrderForDay(currentDay);
   const orderedExs = order.map(id => EXERCISE_INDEX[currentDay][id]);
 
@@ -752,6 +745,8 @@ function renderDay(){
       label.className = 'sets-label';
       label.textContent = 'Séries:';
       setsRow.appendChild(label);
+      const setsButtons = document.createElement('div');
+      setsButtons.className = 'sets-buttons';
       units.forEach((unit, i)=>{
         const b = document.createElement('button');
         b.className = 'set-btn' + (appData.checked[unit] ? ' done' : '');
@@ -761,8 +756,9 @@ function renderDay(){
           scheduleSave();
           renderDay();
         };
-        setsRow.appendChild(b);
+        setsButtons.appendChild(b);
       });
+      setsRow.appendChild(setsButtons);
       body.appendChild(setsRow);
 
       const weightRow = document.createElement('div');

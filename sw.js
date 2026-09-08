@@ -1,5 +1,5 @@
-const CACHE_NAME = 'treino-cache-v1';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
+const CACHE_NAME = 'treino-cache-v2';
+const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './images/face-pull.jpg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(

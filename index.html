@@ -2,8 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Plano de Treino</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#14171A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Treino">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -19,15 +26,33 @@
     --ok:#5FA779;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0;height:100%;}
   body{
     background:var(--ink);
     color:var(--chalk);
     font-family:'Barlow', sans-serif;
     -webkit-tap-highlight-color:transparent;
-    min-height:100vh;
+    height:100%;
+    overflow:hidden;
   }
-  .app{max-width:480px;margin:0 auto;padding:0 0 40px;}
+  .app{
+    max-width:480px;
+    margin:0 auto;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .fixed-header{
+    flex:0 0 auto;
+    background:var(--ink);
+  }
+  .scroll-area{
+    flex:1 1 auto;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    padding-bottom:50px;
+  }
 
   header.top{
     padding:22px 18px 14px;
@@ -36,7 +61,7 @@
   header.top .kicker{
     font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
-    font-size:13px;
+    font-size:20px;
     letter-spacing:.08em;
     color:var(--yellow);
     text-transform:uppercase;
@@ -44,30 +69,29 @@
   header.top h1{
     font-family:'Barlow Condensed', sans-serif;
     font-weight:800;
-    font-size:34px;
+    font-size:51px;
     line-height:1;
-    margin:4px 0 0;
+    margin:6px 0 0;
     letter-spacing:.01em;
   }
 
   nav.days{
-    display:flex;
+    display:grid;
+    grid-template-columns:repeat(5, 1fr);
     gap:8px;
     padding:14px 18px;
-    overflow-x:auto;
     border-bottom:1px solid var(--line);
   }
   nav.days button{
-    flex:0 0 auto;
     background:transparent;
     border:1px solid var(--line);
     color:var(--chalk-dim);
     font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
-    font-size:15px;
-    letter-spacing:.03em;
-    padding:9px 14px;
-    border-radius:3px;
+    font-size:21px;
+    letter-spacing:.02em;
+    padding:12px 4px;
+    border-radius:4px;
     cursor:pointer;
   }
   nav.days button.active{
@@ -82,12 +106,12 @@
   .day-head .title{
     font-family:'Barlow Condensed',sans-serif;
     font-weight:800;
-    font-size:26px;
+    font-size:39px;
     margin:0;
   }
   .day-head .sub{
     color:var(--chalk-dim);
-    font-size:15px;
+    font-size:23px;
     margin-top:2px;
   }
 
@@ -95,9 +119,9 @@
     padding:0 18px 18px;
   }
   .progress-bar{
-    height:6px;
+    height:8px;
     background:var(--steel-2);
-    border-radius:3px;
+    border-radius:4px;
     overflow:hidden;
   }
   .progress-fill{
@@ -107,22 +131,12 @@
     transition:width .25s ease;
   }
   .progress-label{
-    font-size:13px;
+    font-size:20px;
     color:var(--chalk-dim);
     margin-top:6px;
   }
 
-  section.group{
-    padding:0 18px 20px;
-  }
-  section.group h2{
-    font-family:'Barlow Condensed',sans-serif;
-    font-weight:700;
-    font-size:19px;
-    margin:0 0 10px;
-    padding-bottom:6px;
-    border-bottom:1px solid var(--line);
-  }
+  #groups{ padding:0 18px; }
 
   .ex-card{
     display:flex;
@@ -131,8 +145,9 @@
     background:var(--steel);
     border:1px solid var(--line);
     border-radius:4px;
-    padding:12px 14px;
-    margin-bottom:8px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    margin-top:12px;
   }
   .ex-card.done{
     border-color:var(--ok);
@@ -140,8 +155,8 @@
   }
   .ex-check{
     flex:0 0 auto;
-    width:26px;
-    height:26px;
+    width:32px;
+    height:32px;
     border-radius:50%;
     border:2px solid var(--line);
     background:transparent;
@@ -156,10 +171,10 @@
   .ex-check.done::after{
     content:'';
     position:absolute;
-    left:7px; top:3px;
-    width:6px; height:11px;
+    left:9px; top:4px;
+    width:8px; height:14px;
     border:solid var(--ink);
-    border-width:0 2px 2px 0;
+    border-width:0 3px 3px 0;
     transform:rotate(45deg);
   }
   .ex-body{flex:1; min-width:0;}
@@ -171,7 +186,7 @@
   }
   .ex-name{
     font-weight:600;
-    font-size:16px;
+    font-size:24px;
   }
   .ex-card.done .ex-name{
     color:var(--chalk-dim);
@@ -179,7 +194,7 @@
   }
   .tag-principal{
     font-family:'Barlow Condensed',sans-serif;
-    font-size:11px;
+    font-size:17px;
     font-weight:700;
     letter-spacing:.04em;
     color:var(--yellow);
@@ -190,7 +205,7 @@
   }
   .tag-group{
     font-family:'Barlow Condensed',sans-serif;
-    font-size:11px;
+    font-size:17px;
     font-weight:700;
     letter-spacing:.04em;
     color:var(--chalk-dim);
@@ -207,13 +222,13 @@
     margin-left:auto;
   }
   .move-btn{
-    width:30px;
-    height:26px;
+    width:38px;
+    height:32px;
     border-radius:4px;
     border:1px solid var(--line);
     background:transparent;
     color:var(--chalk-dim);
-    font-size:13px;
+    font-size:16px;
     line-height:1;
     display:flex;
     align-items:center;
@@ -226,18 +241,18 @@
     cursor:default;
   }
   .ex-scheme{
-    font-size:14px;
+    font-size:21px;
     color:var(--chalk-dim);
     margin-top:2px;
   }
   .ex-note{
-    font-size:13px;
+    font-size:20px;
     color:var(--chalk-dim);
     margin-top:4px;
     font-style:italic;
   }
   .ex-muscles{
-    font-size:13px;
+    font-size:20px;
     color:var(--chalk-dim);
     margin-top:6px;
   }
@@ -264,20 +279,20 @@
     flex-wrap:wrap;
   }
   .sets-row .sets-label{
-    font-size:12px;
+    font-size:18px;
     color:var(--chalk-dim);
     margin-right:2px;
   }
   .set-btn{
-    width:34px;
-    height:34px;
-    border-radius:6px;
+    width:88px;
+    height:44px;
+    border-radius:8px;
     border:1.5px solid var(--line);
     background:transparent;
     color:var(--chalk-dim);
     font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
-    font-size:15px;
+    font-size:23px;
     display:flex;
     align-items:center;
     justify-content:center;
@@ -297,7 +312,7 @@
     margin-top:10px;
   }
   .weight-row label{
-    font-size:12px;
+    font-size:18px;
     color:var(--chalk-dim);
   }
   .weight-row .weight-input-wrap{
@@ -309,15 +324,15 @@
     padding:0 8px;
   }
   .weight-row input{
-    width:56px;
+    width:76px;
     background:transparent;
     border:none;
     outline:none;
     color:var(--chalk);
     font-family:'Barlow Condensed',sans-serif;
     font-weight:700;
-    font-size:16px;
-    padding:8px 2px;
+    font-size:24px;
+    padding:10px 2px;
     text-align:right;
     -moz-appearance:textfield;
   }
@@ -327,7 +342,7 @@
     margin:0;
   }
   .weight-row .unit{
-    font-size:13px;
+    font-size:20px;
     color:var(--chalk-dim);
     padding-left:2px;
   }
@@ -341,8 +356,8 @@
     border:1px solid var(--line);
     color:var(--chalk-dim);
     font-family:'Barlow',sans-serif;
-    font-size:14px;
-    padding:12px;
+    font-size:21px;
+    padding:14px;
     border-radius:4px;
     cursor:pointer;
   }
@@ -350,42 +365,73 @@
 
   .footer-note{
     padding:6px 18px 0;
-    font-size:12.5px;
+    font-size:19px;
     color:var(--chalk-dim);
     line-height:1.5;
+  }
+
+  .timer-fab{
+    position:fixed;
+    right:20px;
+    bottom:24px;
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    background:var(--yellow);
+    color:var(--ink);
+    border:none;
+    font-family:'Barlow Condensed',sans-serif;
+    font-weight:800;
+    font-size:16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.4);
+    cursor:pointer;
+    z-index:30;
+  }
+  .timer-fab.running{
+    background:var(--ok);
+    font-size:19px;
   }
 </style>
 </head>
 <body>
 <div class="app">
-  <header class="top">
-    <div class="kicker">Musculação · 5x por semana</div>
-    <h1>Plano de treino</h1>
-  </header>
+  <div class="fixed-header">
+    <header class="top">
+      <div class="kicker">Musculação · 5x por semana</div>
+      <h1>Plano de treino</h1>
+    </header>
 
-  <nav class="days" id="dayNav"></nav>
+    <nav class="days" id="dayNav"></nav>
 
-  <div class="day-head">
-    <p class="title" id="dayTitle"></p>
-    <p class="sub" id="daySub"></p>
+    <div class="day-head">
+      <p class="title" id="dayTitle"></p>
+      <p class="sub" id="daySub"></p>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-label" id="progressLabel"></div>
+    </div>
   </div>
 
-  <div class="progress-wrap">
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel"></div>
-  </div>
+  <div class="scroll-area">
+    <div id="groups"></div>
 
-  <div id="groups"></div>
+    <div class="reset-row">
+      <button class="reset-btn" id="resetBtn">Reiniciar marcação de hoje</button>
+    </div>
+    <div class="reset-row" style="padding-top:0;">
+      <button class="reset-btn" id="resetOrderBtn">Restaurar ordem padrão dos exercícios</button>
+    </div>
 
-  <div class="reset-row">
-    <button class="reset-btn" id="resetBtn">Reiniciar marcação de hoje</button>
+    <p class="footer-note">Cardio de 10–15 min encerra todos os dias. Priorize o exercício principal com energia fresca — se o tempo apertar, corte séries dos isolados antes.</p>
   </div>
-  <div class="reset-row" style="padding-top:0;">
-    <button class="reset-btn" id="resetOrderBtn">Restaurar ordem padrão dos exercícios</button>
-  </div>
-
-  <p class="footer-note">Cardio de 10–15 min encerra todos os dias. Priorize o exercício principal com energia fresca — se o tempo apertar, corte séries dos isolados antes.</p>
 </div>
+
+<button class="timer-fab" id="timerBtn">⏱</button>
 
 <script>
 const PLAN = {
@@ -811,6 +857,43 @@ document.getElementById('resetOrderBtn').onclick = ()=>{
 
   window.addEventListener('pagehide', flushSave);
   window.addEventListener('beforeunload', flushSave);
+
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  }
+})();
+
+// Cronômetro simples de descanso entre séries: toca pra iniciar, toca de novo pra zerar.
+(function initTimer(){
+  const timerBtn = document.getElementById('timerBtn');
+  let timerInterval = null;
+  let timerSeconds = 0;
+  let timerRunning = false;
+
+  function formatTime(total){
+    const m = String(Math.floor(total/60)).padStart(2,'0');
+    const s = String(total%60).padStart(2,'0');
+    return `${m}:${s}`;
+  }
+
+  timerBtn.onclick = ()=>{
+    if(!timerRunning){
+      timerRunning = true;
+      timerSeconds = 0;
+      timerBtn.textContent = formatTime(timerSeconds);
+      timerBtn.classList.add('running');
+      timerInterval = setInterval(()=>{
+        timerSeconds++;
+        timerBtn.textContent = formatTime(timerSeconds);
+      }, 1000);
+    } else {
+      timerRunning = false;
+      clearInterval(timerInterval);
+      timerSeconds = 0;
+      timerBtn.textContent = '⏱';
+      timerBtn.classList.remove('running');
+    }
+  };
 })();
 </script>
 </body>

@@ -863,34 +863,69 @@ document.getElementById('resetOrderBtn').onclick = ()=>{
 // Cronômetro simples de descanso entre séries: toca pra iniciar, toca de novo pra zerar.
 (function initTimer(){
   const timerBtn = document.getElementById('timerBtn');
+  const TIMER_KEY = 'treino-timer-start';
   let timerInterval = null;
-  let timerSeconds = 0;
   let timerRunning = false;
+  let timerStartTs = null;
 
-  function formatTime(total){
-    const m = String(Math.floor(total/60)).padStart(2,'0');
-    const s = String(total%60).padStart(2,'0');
+  function formatTime(totalSeconds){
+    const m = String(Math.floor(totalSeconds/60)).padStart(2,'0');
+    const s = String(totalSeconds%60).padStart(2,'0');
     return `${m}:${s}`;
   }
 
+  // Sempre calcula o tempo decorrido a partir do horário real de início,
+  // em vez de contar "tique a tique" — assim fica preciso mesmo se o
+  // navegador pausar o timer enquanto o app está em segundo plano.
+  function updateDisplay(){
+    if(!timerRunning || timerStartTs === null) return;
+    const elapsed = Math.floor((Date.now() - timerStartTs) / 1000);
+    timerBtn.textContent = formatTime(elapsed);
+  }
+
+  function startTimer(){
+    timerRunning = true;
+    timerStartTs = Date.now();
+    try{ localStorage.setItem(TIMER_KEY, String(timerStartTs)); }catch(e){}
+    timerBtn.classList.add('running');
+    updateDisplay();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateDisplay, 1000);
+  }
+
+  function stopTimer(){
+    timerRunning = false;
+    timerStartTs = null;
+    clearInterval(timerInterval);
+    try{ localStorage.removeItem(TIMER_KEY); }catch(e){}
+    timerBtn.textContent = '⏱';
+    timerBtn.classList.remove('running');
+  }
+
   timerBtn.onclick = ()=>{
-    if(!timerRunning){
-      timerRunning = true;
-      timerSeconds = 0;
-      timerBtn.textContent = formatTime(timerSeconds);
-      timerBtn.classList.add('running');
-      timerInterval = setInterval(()=>{
-        timerSeconds++;
-        timerBtn.textContent = formatTime(timerSeconds);
-      }, 1000);
-    } else {
-      timerRunning = false;
-      clearInterval(timerInterval);
-      timerSeconds = 0;
-      timerBtn.textContent = '⏱';
-      timerBtn.classList.remove('running');
-    }
+    if(!timerRunning) startTimer();
+    else stopTimer();
   };
+
+  // Ao voltar de outro app (ex: WhatsApp), recalcula na hora certa,
+  // sem depender do setInterval ter continuado rodando em segundo plano.
+  document.addEventListener('visibilitychange', ()=>{
+    if(document.visibilityState === 'visible' && timerRunning){
+      updateDisplay();
+    }
+  });
+
+  // Se o app foi recarregado com um cronômetro em andamento salvo, retoma.
+  try{
+    const saved = localStorage.getItem(TIMER_KEY);
+    if(saved){
+      timerRunning = true;
+      timerStartTs = parseInt(saved, 10);
+      timerBtn.classList.add('running');
+      updateDisplay();
+      timerInterval = setInterval(updateDisplay, 1000);
+    }
+  }catch(e){}
 })();
 </script>
 </body>

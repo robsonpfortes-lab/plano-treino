@@ -1,5 +1,12 @@
-const CACHE_NAME = 'treino-cache-v2';
-const ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './images/face-pull.jpg'];
+const CACHE_NAME = 'treino-cache-v3';
+const ASSETS = [
+  './', './index.html', './manifest.json', './icon-192.png', './icon-512.png',
+  './images/face-pull.jpg',
+  './images/desenvolvimento-halteres.jpg',
+  './images/triceps-testa.jpg',
+  './images/elevacao-lateral.jpg',
+  './images/elevacao-frontal.jpg'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
